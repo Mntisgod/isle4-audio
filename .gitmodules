@@ -1,0 +1,3 @@
+[submodule "sample"]
+	path = sample
+	url = git@github.com:inokoj/le4-audio-kuis.git
