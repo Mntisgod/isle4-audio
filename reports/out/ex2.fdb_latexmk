@@ -1,10 +1,10 @@
 # Fdb version 3
-["dvipdf"] 1701935066 "out/ex2.dvi" "out/ex2.pdf" "out/ex2" 1701935067
-  "out/ex2.dvi" 1701935066 5524 f634c1cc408c8229d8c52d0ab5269626 "latex"
+["dvipdf"] 1701999613 "out/ex2.dvi" "out/ex2.pdf" "out/ex2" 1701999614
+  "out/ex2.dvi" 1701999613 11492 1fa451fe045b64a0c16c753a851a53c7 "latex"
   (generated)
   "out/ex2.pdf"
-["latex"] 1701935065 "/Users/hurlxi_conf/実験4/実験4_音響/reports/ex2.tex" "out/ex2.dvi" "ex2" 1701935067
-  "/Users/hurlxi_conf/実験4/実験4_音響/reports/ex2.tex" 1701935065 4128 6731ae4a1ef8911466eaab8997e893e7 ""
+["latex"] 1701999612 "/Users/hurlxi_conf/実験4/実験4_音響/reports/ex2.tex" "out/ex2.dvi" "ex2" 1701999614
+  "/Users/hurlxi_conf/実験4/実験4_音響/reports/ex2.tex" 1701999612 6164 de2636d2058985947812fad2869ec4c8 ""
   "/usr/local/texlive/2022/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2022/texmf-dist/fonts/tfm/ptex-fonts/standard/goth10.tfm" 1463434352 1196 5981e79c37b2cfd27b3612a6783cd4b6 ""
   "/usr/local/texlive/2022/texmf-dist/fonts/tfm/ptex-fonts/standard/min10.tfm" 1463434352 1196 1be730212205a270378fba11a44765dc ""
@@ -20,10 +20,12 @@
   "/usr/local/texlive/2022/texmf-dist/fonts/tfm/public/cm/cmbx12.tfm" 1136768653 1324 c910af8c371558dc20f2d7822f66fe64 ""
   "/usr/local/texlive/2022/texmf-dist/fonts/tfm/public/cm/cmex10.tfm" 1136768653 992 662f679a0b3d2d53c1b94050fdaa3f50 ""
   "/usr/local/texlive/2022/texmf-dist/fonts/tfm/public/cm/cmmi10.tfm" 1136768653 1528 abec98dbc43e172678c11b3b9031252a ""
+  "/usr/local/texlive/2022/texmf-dist/fonts/tfm/public/cm/cmmi12.tfm" 1136768653 1524 4414a8315f39513458b80dfc63bff03a ""
   "/usr/local/texlive/2022/texmf-dist/fonts/tfm/public/cm/cmmi6.tfm" 1136768653 1512 f21f83efb36853c0b70002322c1ab3ad ""
   "/usr/local/texlive/2022/texmf-dist/fonts/tfm/public/cm/cmmi8.tfm" 1136768653 1520 eccf95517727cb11801f4f1aee3a21b4 ""
   "/usr/local/texlive/2022/texmf-dist/fonts/tfm/public/cm/cmr10.tfm" 1136768653 1296 45809c5a464d5f32c8f98ba97c1bb47f ""
   "/usr/local/texlive/2022/texmf-dist/fonts/tfm/public/cm/cmr12.tfm" 1136768653 1288 655e228510b4c2a1abe905c368440826 ""
+  "/usr/local/texlive/2022/texmf-dist/fonts/tfm/public/cm/cmr17.tfm" 1136768653 1292 296a67155bdbfc32aa9c636f21e91433 ""
   "/usr/local/texlive/2022/texmf-dist/fonts/tfm/public/cm/cmr6.tfm" 1136768653 1300 b62933e007d01cfd073f79b963c01526 ""
   "/usr/local/texlive/2022/texmf-dist/fonts/tfm/public/cm/cmr8.tfm" 1136768653 1292 21c1c5bfeaebccffdb478fd231a0997d ""
   "/usr/local/texlive/2022/texmf-dist/fonts/tfm/public/cm/cmsy10.tfm" 1136768653 1124 6c73e740cf17375f03eec0ee63599741 ""
@@ -61,15 +63,17 @@
   "/usr/local/texlive/2022/texmf-dist/web2c/texmf.cnf" 1646502317 40171 cdab547de63d26590bebb3baff566530 ""
   "/usr/local/texlive/2022/texmf-var/web2c/eptex/platex.fmt" 1658138257 2865881 65ebb3a4d96378f55176400267b07e7d ""
   "/usr/local/texlive/2022/texmf.cnf" 1647878952 577 209b46be99c9075fd74d4c0369380e8c ""
-  "ex2.tex" 1701935065 4128 6731ae4a1ef8911466eaab8997e893e7 ""
+  "ex2.tex" 1701999612 6164 de2636d2058985947812fad2869ec4c8 ""
   "img/a-plot-spectrum-whole.png" 1701928220 31122 f32cf41a28c44d47a147e7846f621cd0 ""
   "img/aiueo-plot-spectrum-whole.png" 1701928128 27680 17cb96ffca12c894a90e1b9edf9bcc34 ""
   "img/e-plot-spectrum-whole.png" 1701928399 28763 cd9fd41848fb3eb869f5874635ef934c ""
   "img/i-plot-spectrum-whole.png" 1701928352 30218 4b58f7e98e127503cc0b249a510d8b25 ""
   "img/o-plot-spectrum-whole.png" 1701928402 29919 8dccab59ec8b29ee725e4aa07dc476ca ""
   "img/u-plot-spectrum-whole.png" 1701928393 30906 53afd4dc9a3ed4715bc391a555a9733a ""
-  "out/ex2.aux" 1701935066 984 f351d78982284155f3f48f85798592c3 "latex"
+  "out/ex2.aux" 1701999613 2211 761e3bce61b53144e559e4d530b5e262 "latex"
+  "out/ex2.toc" 1701999613 651 531de39cd93412a7d58414b9f1fda6ce "latex"
   (generated)
   "out/ex2.aux"
   "out/ex2.dvi"
   "out/ex2.log"
+  "out/ex2.toc"

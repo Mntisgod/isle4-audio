@@ -29,8 +29,12 @@
 }
 %ここまで表示に関する設定
 \begin{document}
-
-\section*{演習2}
+\title{音声情報処理演習まとめ}
+\author{学籍番号: 1029332978 氏名: 上野山遼音}
+\maketitle
+\tableofcontents
+\clearpage
+\section{演習2}
 \begin{figure}[H]
   \centering
   \includegraphics[width=120mm]{img/aiueo-plot-spectrum-whole.png}
@@ -66,7 +70,7 @@
   \caption{o.wavの波形とスペクトル}
 \end{figure}
 
-\section*{演習3}
+\section{演習3}
 実数入力に対する1次元離散フーリエ変換を計算するするライブラリ．
 高速フーリエ変換（FFT）によって、実数値配列の1次元n点離散フーリエ変換（DFT）を計算する．
 入力は実数値配列で、出力は複素数値配列である．
@@ -77,15 +81,15 @@
 したがって負の周波数項は冗長になるのでRFFTでは負の周波数項を計算しない．
 その結果、出力の軸の長さは $\lfloor n/2 \rfloor+ 1
 $になる．
-\section*{演習4}
-\subsection*{バタフライ演算}
-\paragraph*{DFTについて}
+\section{演習4}
+\subsection{バタフライ演算}
+\paragraph{DFTについて}
 そもそも、DFTでは$N$点の実変数 $f(0),f(1), ... ,f(N-1)$を離散フーリエ変数 $F(0),F(1), ... ,F(N-1)$に変換するために
 $N$次正方行列であるDFT行列を掛け合わせているのだった．
 この計算では，$O(N^2)$となる．この計算量を軽減するために、高速フーリエ変換（FFT）が考案された． 
-\paragraph*{FFTの計算量}
+\paragraph{FFTの計算量}
 上述の通りDFTでは計算量が多いので、バタフライ演算を用いて計算量を減らしている．
-\subsection*{FFTの実践(手計算)}
+\subsection{FFTの実践(手計算)}
 input $= (1,0,3,2,4,0,2,0)^T $
 \begin{align}
 (略)
@@ -100,4 +104,60 @@ array([12.        +0.j        , -4.41421356-2.41421356j,
       0.        -2.j        , -4.41421356+2.41421356j])
 \end{lstlisting}
 
+\section{演習5}
+% \begin{figure}[H]
+%   \centering
+%   \includegraphics[width=90mm]{img/aiueo-plot-spectrum.png}
+%   \caption{「あいうえお」のスペクトログラム}
+% \end{figure}
+使用した窓関数はハミング窓である．
+フレームサイズは512，シフト長は SR($=16000) / 100 = 160$ とした． 
+スペクトログラムの縦軸は周波数であり，標本化定理に基づきプロット区間は0から8000Hzまでとした．
+また，横軸は時間である．濃淡がx軸上の時間におけるy軸上の周波数の強さを表す。
+
+
+\section{演習6}
+\paragraph{np.fft.rfft と np.fft.fftの違いについて}
+どちらも高速フーリエ変換(FFT)を行うものではあるが，np.fft.rfftは実数の入力に対してFFTを行い，
+np.fft.fftは複素数の入力に対してFFTを行う．
+
+rfftが存在する理由は、先述のエルミート対称性を利用し、必要な計算数を削減することができる点にある．
+\section{演習7}
+DFTは(2)式で表される．
+\begin{equation}
+  F(t) = \sum_{x=0}^{N-1} f(x)e^{-2\pi ixt/N}dx
+\end{equation}
+ただし，$N=2^M(M\in Z^+)$である．
+\begin{lstlisting}[caption=FFT実装,label=prog1]
+import numpy as np
+import time
+
+
+def FFT(f: np.ndarray) -> np.ndarray:
+    n = len(f)
+    w = np.exp(-2j * np.pi / n)
+    w_N = w ** np.arange(n//2)
+    if n == 1:
+        return f[0]
+    F_even = FFT(f[::2])
+    F_odd = FFT(f[1::2])
+    F = np.zeros(n, dtype=np.complex128)
+    F[0:n//2] = F_even + w_N * F_odd
+    F[n//2:] = F_even - w_N * F_odd
+
+    return F
+
+
+input_array = np.arange(2**14, dtype=int)
+start = time.perf_counter()
+FFT(input_array)
+end = time.perf_counter()
+print(end - start)
+start = time.perf_counter()
+np.fft.rfft(input_array)
+end = time.perf_counter()
+print(end - start)
+
+print(np.allclose(FFT(input_array), np.fft.fft(input_array), atol=1e-10))
+\end{lstlisting}
 \end{document}

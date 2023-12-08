@@ -1,0 +1,11 @@
+\contentsline {section}{\numberline {1}演習2}{2}{}%
+\contentsline {section}{\numberline {2}演習3}{4}{}%
+\contentsline {section}{\numberline {3}演習4}{5}{}%
+\contentsline {subsection}{\numberline {3.1}バタフライ演算}{5}{}%
+\contentsline {paragraph}{DFTについて}{5}{}%
+\contentsline {paragraph}{FFTの計算量}{5}{}%
+\contentsline {subsection}{\numberline {3.2}FFTの実践(手計算)}{5}{}%
+\contentsline {section}{\numberline {4}演習5}{5}{}%
+\contentsline {section}{\numberline {5}演習6}{5}{}%
+\contentsline {paragraph}{np.fft.rfft と np.fft.fftの違いについて}{5}{}%
+\contentsline {section}{\numberline {6}演習7}{5}{}%

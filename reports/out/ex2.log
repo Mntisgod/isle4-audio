@@ -1,4 +1,4 @@
-This is e-pTeX, Version 3.141592653-p4.0.0-220214-2.6 (utf8.euc) (TeX Live 2022) (preloaded format=platex 2022.7.18)  7 DEC 2023 16:44
+This is e-pTeX, Version 3.141592653-p4.0.0-220214-2.6 (utf8.euc) (TeX Live 2022) (preloaded format=platex 2022.7.18)  8 DEC 2023 10:40
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -207,7 +207,11 @@ File: l3backend-dvips.def 2022-07-01 L3 backend support: dvips
 \g__pdf_backend_annotation_int=\count291
 \g__pdf_backend_link_int=\count292
 \g__pdf_backend_link_sf_int=\count293
-) (out/ex2.aux)
+) (out/ex2.aux
+
+LaTeX Warning: Label `prog1' multiply defined.
+
+)
 \openout1 = `ex2.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 31.
@@ -264,47 +268,59 @@ LaTeX Font Info:    ... okay on input line 31.
 
 \c@lstlisting=\count294
 LaTeX Font Info:    Font shape `JT1/mc/bx/n' in size <14.4> not available
-(Font)              Font shape `JT1/gt/m/n' tried instead on input line 33.
+(Font)              Font shape `JT1/gt/m/n' tried instead on input line 35.
 LaTeX Font Info:    Font shape `JY1/mc/bx/n' in size <14.4> not available
-(Font)              Font shape `JY1/gt/m/n' tried instead on input line 33.
+(Font)              Font shape `JY1/gt/m/n' tried instead on input line 35.
+(out/ex2.toc
+LaTeX Font Info:    Font shape `JT1/mc/bx/n' in size <10.95> not available
+(Font)              Font shape `JT1/gt/m/n' tried instead on input line 1.
+LaTeX Font Info:    Font shape `JY1/mc/bx/n' in size <10.95> not available
+(Font)              Font shape `JY1/gt/m/n' tried instead on input line 1.
+)
+\tf@toc=\write3
+\openout3 = `ex2.toc'.
+
+[1
+
+]
 File: img/aiueo-plot-spectrum-whole.png Graphic file (type bmp)
 <img/aiueo-plot-spectrum-whole.png>
 File: img/a-plot-spectrum-whole.png Graphic file (type bmp)
 <img/a-plot-spectrum-whole.png>
 File: img/i-plot-spectrum-whole.png Graphic file (type bmp)
 <img/i-plot-spectrum-whole.png>
-[1
+[2
 
 ]
 File: img/u-plot-spectrum-whole.png Graphic file (type bmp)
 <img/u-plot-spectrum-whole.png>
 File: img/e-plot-spectrum-whole.png Graphic file (type bmp)
 <img/e-plot-spectrum-whole.png>
-[2]
+[3]
 File: img/o-plot-spectrum-whole.png Graphic file (type bmp)
 <img/o-plot-spectrum-whole.png>
-[3]
+[4]
 LaTeX Font Info:    Font shape `JT1/mc/bx/n' in size <12> not available
-(Font)              Font shape `JT1/gt/m/n' tried instead on input line 81.
+(Font)              Font shape `JT1/gt/m/n' tried instead on input line 85.
 LaTeX Font Info:    Font shape `JY1/mc/bx/n' in size <12> not available
-(Font)              Font shape `JY1/gt/m/n' tried instead on input line 81.
-LaTeX Font Info:    Font shape `JT1/mc/bx/n' in size <10.95> not available
-(Font)              Font shape `JT1/gt/m/n' tried instead on input line 83.
-LaTeX Font Info:    Font shape `JY1/mc/bx/n' in size <10.95> not available
-(Font)              Font shape `JY1/gt/m/n' tried instead on input line 83.
+(Font)              Font shape `JY1/gt/m/n' tried instead on input line 85.
 
-Overfull \hbox (53.78812pt too wide) in paragraph at lines 83--86
- \OT1/cmr/bx/n/10.95 DFT \JY1/gt/m/n/10.95 について \JY1/mc/m/n/10.95 そもそも 、 \OT1/cmr/m/n/10.95 DFT \JY1/mc/m/n/10.95 では $\OML/cmm/m/it/10.95 N$ \JY1/mc/m/n/10.95 点の実変数 $\OML/cmm/m/it/10.95 f\OT1/cmr/m/n/10.95 (0)\OML/cmm/m/it/10.95 ; f\OT1/cmr/m/n/10.95 (1)\OML/cmm/m/it/10.95 ; :::; f\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 N \OMS/cmsy/m/n/10.95 ^^@ \OT1/cmr/m/n/10.95 1)$ \JY1/mc/m/n/10.95 を離散フ ーリエ変数 $\OML/cmm/m/it/10.95 F\OT1/cmr/m/n/10.95 (0)\OML/cmm/m/it/10.95 ; F\OT1/cmr/m/n/10.95 (1)\OML/cmm/m/it/10.95 ; :::; F\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 N \OMS/cmsy/m/n/10.95 ^^@
+Overfull \hbox (53.78812pt too wide) in paragraph at lines 87--90
+ \OT1/cmr/bx/n/10.95 DFT \JY1/gt/m/n/10.95 について[] \JY1/mc/m/n/10.95 そもそも 、 \OT1/cmr/m/n/10.95 DFT \JY1/mc/m/n/10.95 では $\OML/cmm/m/it/10.95 N$ \JY1/mc/m/n/10.95 点の実変数 $\OML/cmm/m/it/10.95 f\OT1/cmr/m/n/10.95 (0)\OML/cmm/m/it/10.95 ; f\OT1/cmr/m/n/10.95 (1)\OML/cmm/m/it/10.95 ; :::; f\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 N \OMS/cmsy/m/n/10.95 ^^@ \OT1/cmr/m/n/10.95 1)$ \JY1/mc/m/n/10.95 を離散フ ーリエ変数 $\OML/cmm/m/it/10.95 F\OT1/cmr/m/n/10.95 (0)\OML/cmm/m/it/10.95 ; F\OT1/cmr/m/n/10.95 (1)\OML/cmm/m/it/10.95 ; :::; F\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 N \OMS/cmsy/m/n/10.95 ^^@
  []
 
-[4] (out/ex2.aux) ) 
-Here is how much of TeX's memory you used:
- 4430 strings out of 478482
- 66999 string characters out of 5850746
- 413424 words of memory out of 5000000
- 23073 multiletter control sequences out of 15000+600000
- 481082 words of font info for 76 fonts, out of 8000000 for 9000
- 929 hyphenation exceptions out of 8191
- 55i,8n,62p,296b,1175s stack positions out of 10000i,1000n,20000p,200000b,200000s
+[5] [6] (out/ex2.aux)
 
-Output written on out/ex2.dvi (4 pages, 5524 bytes).
+LaTeX Warning: There were multiply-defined labels.
+
+ ) 
+Here is how much of TeX's memory you used:
+ 4444 strings out of 478482
+ 67162 string characters out of 5850746
+ 506463 words of memory out of 5000000
+ 23082 multiletter control sequences out of 15000+600000
+ 482683 words of font info for 82 fonts, out of 8000000 for 9000
+ 929 hyphenation exceptions out of 8191
+ 55i,8n,62p,296b,1720s stack positions out of 10000i,1000n,20000p,200000b,200000s
+
+Output written on out/ex2.dvi (6 pages, 11492 bytes).
