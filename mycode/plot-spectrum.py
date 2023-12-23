@@ -14,7 +14,7 @@ import librosa
 SR = 16000
 
 # 音声ファイルの読み込み
-wav_name = str(input())
+wav_name = "../wav/aiueo.wav"
 x, _ = librosa.load(wav_name, sr=SR)
 
 # 高速フーリエ変換
@@ -39,6 +39,7 @@ plt.xlim([0, SR/2])					# x軸の範囲を設定
 # x_data = np.linspace((SR/2)/len(fft_log_abs_spec), SR/2, len(fft_log_abs_spec))
 x_data = np.fft.rfftfreq(len(x), d=1/SR)
 plt.plot(x_data, fft_log_abs_spec)			# 描画
+plt.plot(x, color="red")
 # 【補足】
 # 縦軸の最大値はサンプリング周波数の半分 = 16000 / 2 = 8000 Hz となる
 

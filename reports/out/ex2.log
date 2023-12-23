@@ -1,4 +1,4 @@
-This is e-pTeX, Version 3.141592653-p4.0.0-220214-2.6 (utf8.euc) (TeX Live 2022) (preloaded format=platex 2022.7.18)  8 DEC 2023 10:40
+This is e-pTeX, Version 3.141592653-p4.0.0-220214-2.6 (utf8.euc) (TeX Live 2022) (preloaded format=platex 2022.7.18)  22 DEC 2023 04:05
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -309,18 +309,21 @@ Overfull \hbox (53.78812pt too wide) in paragraph at lines 87--90
  \OT1/cmr/bx/n/10.95 DFT \JY1/gt/m/n/10.95 について[] \JY1/mc/m/n/10.95 そもそも 、 \OT1/cmr/m/n/10.95 DFT \JY1/mc/m/n/10.95 では $\OML/cmm/m/it/10.95 N$ \JY1/mc/m/n/10.95 点の実変数 $\OML/cmm/m/it/10.95 f\OT1/cmr/m/n/10.95 (0)\OML/cmm/m/it/10.95 ; f\OT1/cmr/m/n/10.95 (1)\OML/cmm/m/it/10.95 ; :::; f\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 N \OMS/cmsy/m/n/10.95 ^^@ \OT1/cmr/m/n/10.95 1)$ \JY1/mc/m/n/10.95 を離散フ ーリエ変数 $\OML/cmm/m/it/10.95 F\OT1/cmr/m/n/10.95 (0)\OML/cmm/m/it/10.95 ; F\OT1/cmr/m/n/10.95 (1)\OML/cmm/m/it/10.95 ; :::; F\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 N \OMS/cmsy/m/n/10.95 ^^@
  []
 
-[5] [6] (out/ex2.aux)
+[5]
+File: img/aiueo2-plot-spectrum-and-fundamental.png Graphic file (type bmp)
+<img/aiueo2-plot-spectrum-and-fundamental.png>
+[6] [7] (out/ex2.aux)
 
 LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 4444 strings out of 478482
- 67162 string characters out of 5850746
- 506463 words of memory out of 5000000
- 23082 multiletter control sequences out of 15000+600000
+ 4449 strings out of 478482
+ 67403 string characters out of 5850746
+ 507463 words of memory out of 5000000
+ 23086 multiletter control sequences out of 15000+600000
  482683 words of font info for 82 fonts, out of 8000000 for 9000
  929 hyphenation exceptions out of 8191
- 55i,8n,62p,296b,1720s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 55i,10n,62p,296b,1720s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on out/ex2.dvi (6 pages, 11492 bytes).
+Output written on out/ex2.dvi (7 pages, 14488 bytes).

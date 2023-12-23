@@ -160,4 +160,43 @@ print(end - start)
 
 print(np.allclose(FFT(input_array), np.fft.fft(input_array), atol=1e-10))
 \end{lstlisting}
+
+\section{演習12}
+自己相関はパワースペクトル(振幅スペクトルの 2 乗)の逆フーリエ変換で計算できる. これを証明せよ.
+また，このように自己相関を計算することの利点について述べよ.
+さらに，この方法を実装し，numpy.correlate() を用いる場合と実行時間を比較せよ
+
+\section*{演習15}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=120mm]{img/aiueo2-plot-spectrum-and-fundamental.png}
+  \caption{o.wavの波形とスペクトル}
+\end{figure}
+\section{演習17}
+
+\noindent Q. 共分散行列が対角行列であるときと，そうでないときのそれぞれについて，どのような多次元正規分布を仮定しているのかについて説明せよ．
+\\
+A. 
+\\
+$
+共分散行列 D = \begin{pmatrix}
+  \sigma_{1}^2 & \sigma_{12}^2 & \cdots & \sigma_{1n}^2 \\
+  \sigma_{21}^2 & \sigma_{2}^2 & \cdots & \sigma_{2n}^2 \\
+  \vdots & \vdots & \ddots & \vdots \\
+  \sigma_{n1}^2 & \sigma_{n2}^2 & \cdots & \sigma_{n}^2
+\end{pmatrix}
+を考える．\\対角行列であれば，\sigma_{ij}^2 = 0 (i \neq j)であるので，任意の共分散が0となり，
+確率変数の独立性が仮定されている．
+そうでない場合は，共分散が0でないので，独立性は仮定されていない．
+$
+
+
+\section{演習18}
+\noindent
+Q. 共分散行列が対角行列とみなさない場合について，多次元正規分布の確率密度関数と共分散行列の最尤推定値を示せ.さらに，前述の「あいうえお」の学習と認識について，この共分散行列を仮定し て行い，前述の結果と比較せよ.
+\\
+A. なんか行列式の微分とかこねくり回せば対角行列と同じ結果になるはず．
+
+\section{演習19}
+
 \end{document}
