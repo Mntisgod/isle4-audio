@@ -14,7 +14,7 @@ import librosa
 SR = 16000
 
 # 音声ファイルの読み込み
-wav_name = "../wav/aiueo.wav"
+wav_name = "../sample/aiueo.wav"
 x, _ = librosa.load(wav_name, sr=SR)
 
 # 高速フーリエ変換
@@ -38,6 +38,7 @@ plt.xlim([0, SR/2])					# x軸の範囲を設定
 # x軸のデータを生成（元々のデータが0~8000Hzに対応するようにする）
 # x_data = np.linspace((SR/2)/len(fft_log_abs_spec), SR/2, len(fft_log_abs_spec))
 x_data = np.fft.rfftfreq(len(x), d=1/SR)
+print(x_data)
 plt.plot(x_data, fft_log_abs_spec)			# 描画
 plt.plot(x, color="red")
 # 【補足】

@@ -1,30 +1,31 @@
-#
-# 計算機科学実験及演習 4「音響信号処理」
-# サンプルソースコード
-#
-# 音声ファイルを読み込み，フーリエ変換を行う．
-#
-
 # ライブラリの読み込み
 import matplotlib.pyplot as plt
 import numpy as np
 import librosa
+import math
 
+
+# 周波数からノートナンバーへ変換（notenumber.pyより）
+def hz2nn(frequency):
+    # fが無限大の場合はエラーとなるので，その場合は-1を返す
+    if frequency == float('inf'):
+        return -1
+    return int (round (12.0 * (math.log(frequency / 440.0) / math.log (2.0)))) + 69
 
 # 配列 a の index 番目の要素がピーク（両隣よりも大きい）であれば True を返す
 def is_peak(a, index):
-	# （自分で実装すること，passは消す）
-	if index == 0 or index == len(a)-1:
-		return False
-	if a[index-1] < a[index] and a[index] > a[index+1]:
-		return True
-	else:
-		return False
+    # （自分で実装すること，passは消す）
+    if index == 0 or index == len(a)-1:
+        return False
+    if a[index-1] < a[index] and a[index] > a[index+1]:
+        return True
+    else:
+        return False
 
 # サンプリングレート
 SR = 16000
 
-wav_path = "../wav/aiueo.wav"
+wav_path = "shs-test.wav"
 # 音声ファイルの読み込み
 x, _ = librosa.load(wav_path, sr=SR)
 
@@ -43,6 +44,9 @@ peakindices = [i for i in peakindices if i != 0]
 interval_size = 1000  # 例として1000サンプルごとに区間を分割
 num_intervals = len(x) // interval_size
 
+nn_list = []
+
+
 # 各区間での周波数を計算
 for i in range(num_intervals):
     start_idx = i * interval_size
@@ -56,4 +60,12 @@ for i in range(num_intervals):
 
     # 区間ごとの周波数を計算して出力
     freq_interval = SR / max_peak_index_interval
-    print(f"区間 {i + 1}: {freq_interval} Hz")
+    nn_list.append(hz2nn(freq_interval))
+
+# ピッチの表示
+plt.figure(figsize=(10, 4))
+plt.plot(nn_list)
+plt.title('Pitch')
+plt.xlabel('Time (s)')
+plt.ylabel('Pitch')
+plt.show()

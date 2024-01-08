@@ -43,6 +43,7 @@ for i in range(0, len(x)-size_frame, size_shift):
             max_chroma = i
             ans = _chroma_vector[i] + 0.5 * _chroma_vector[(i+4) % 12] + 0.8 *_chroma_vector[(i+7) % 12]
     for i in range(12):
+        # Minor
         if ans < _chroma_vector[i] + 0.5 * _chroma_vector[(i+3) % 12] + 0.8 * _chroma_vector[(i+7) % 12]:
             max_chroma = 12 + i
             ans = _chroma_vector[i] + 0.5 * _chroma_vector[(i+3) % 12] + 0.8 * _chroma_vector[(i+7) % 12]

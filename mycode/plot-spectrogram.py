@@ -7,7 +7,7 @@ import librosa
 SR = 16000
 
 # 音声ファイルの読み込み
-wav_path = "../wav/1_1.wav"
+wav_path = "kongyo.wav"
 x, _ = librosa.load(wav_path, sr=SR)
 
 # 短時間フーリエ変換
