@@ -69,7 +69,7 @@ sigma_o = np.var(np.array(cep_list_o), axis=0)
 
 # print(sigma_a, sigma_i, sigma_u, sigma_e, sigma_o)
 # 音声ファイルの読み込み
-y, sr = librosa.load("../wav/1_1.wav", sr=SR)
+y, sr = librosa.load("output.wav", sr=SR)
 
 pred = []
 spectrogram = []
@@ -108,10 +108,6 @@ for i in np.arange(0, len(y)-size_frame, size_shift):
 	# また、最後のほうの画像描画処理において、
 	# 	extent=[0, len(x), 0, 500], 
 	# にする必要があることに注意
-
-
-
-
     cep = np.real(np.fft.rfft(fft_log_abs_spec))
     cep = cep[:13]
     likelihood_a = calc_likelihood(cep, mu_a, sigma_a)
