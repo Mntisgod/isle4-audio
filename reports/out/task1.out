@@ -1,0 +1,11 @@
+\BOOKMARK [1][-]{section.1}{システム概要}{}% 1
+\BOOKMARK [1][-]{section.2}{プログラムの説明}{}% 2
+\BOOKMARK [2][-]{subsection.2.1}{プログラムの構成}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{各関数の説明}{section.2}% 4
+\BOOKMARK [2][-]{subsection.2.3}{main}{section.2}% 5
+\BOOKMARK [3][-]{subsubsection.2.3.1}{openfile}{subsection.2.3}% 6
+\BOOKMARK [3][-]{subsubsection.2.3.2}{is\137peak}{subsection.2.3}% 7
+\BOOKMARK [2][-]{subsection.2.4}{calc}{section.2}% 8
+\BOOKMARK [3][-]{subsubsection.2.4.1}{draw\137data}{subsection.2.4}% 9
+\BOOKMARK [3][-]{subsubsection.2.4.2}{draw\137spectrum}{subsection.2.4}% 10
+\BOOKMARK [1][-]{section.3}{工夫した点，今後の展望}{}% 11

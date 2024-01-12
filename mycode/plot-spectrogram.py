@@ -7,7 +7,7 @@ import librosa
 SR = 16000
 
 # 音声ファイルの読み込み
-wav_path = "kongyo.wav"
+wav_path = "sobiet.wav"
 x, _ = librosa.load(wav_path, sr=SR)
 
 # 短時間フーリエ変換
@@ -21,7 +21,7 @@ hamming_window = np.hamming(size_frame)
 
 # シフトサイズ
 size_shift = 16000 / 100	# 0.01 秒 (10 msec)
-
+print(type(size_shift))
 # スペクトログラムを保存するlist
 spectrogram = []
 
@@ -30,7 +30,6 @@ spectrogram = []
 # 通常のrange関数と違うのは3つ目の引数で間隔を指定できるところ
 # (初期位置, 終了位置, 1ステップで進める間隔)
 for i in np.arange(0, len(x)-size_frame, size_shift):
-	print(i)
 	# 該当フレームのデータを取得
 	idx = int(i)	# arangeのインデクスはfloatなのでintに変換
 	x_frame = x[idx : idx+size_frame]

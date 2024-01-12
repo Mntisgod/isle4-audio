@@ -5,17 +5,17 @@ import matplotlib.pyplot as plt
 # サンプリングレート
 SR = 16000
 # 窓をスライドさせる幅(フレームサイズ)
-size_frame = 512
+size_frame = 4096
 hamming_window = np.hamming(size_frame)
 # シフトサイズ
-size_shift = 16000 / 100	# 0.01 秒 (10 msec)
+size_shift = SR / 100	# 0.01 秒 (10 msec)
 
 # 音声ファイルの読み込み
-wav_a = "../wav/2_1_a.wav"
-wav_i = "../wav/2_1_i.wav"
-wav_u = "../wav/2_1_u.wav"
-wav_e = "../wav/2_1_e.wav"
-wav_o = "../wav/2_1_o.wav"
+wav_a = "../source/2_1_a.wav"
+wav_i = "../source/2_1_i.wav"
+wav_u = "../source/2_1_u.wav"
+wav_e = "../source/2_1_e.wav"
+wav_o = "../source/2_1_o.wav"
 
 x_a, sr_a = librosa.load(wav_a, sr=SR)
 x_i, sr_i = librosa.load(wav_i, sr=SR)
@@ -69,7 +69,7 @@ sigma_o = np.var(np.array(cep_list_o), axis=0)
 
 # print(sigma_a, sigma_i, sigma_u, sigma_e, sigma_o)
 # 音声ファイルの読み込み
-y, sr = librosa.load("output.wav", sr=SR)
+y, sr = librosa.load("aiueo.wav", sr=SR)
 
 pred = []
 spectrogram = []
@@ -117,7 +117,7 @@ for i in np.arange(0, len(y)-size_frame, size_shift):
     likelihood_o = calc_likelihood(cep, mu_o, sigma_o)
     print(likelihood_a, likelihood_i, likelihood_u, likelihood_e, likelihood_o)
     likelihood = [likelihood_a, likelihood_i, likelihood_u, likelihood_e, likelihood_o]
-    pred.append((likelihood.index(max(likelihood))+ 1)* 1000)
+    pred.append((likelihood.index(max(likelihood))+ 1)* SR / 10)
     
     # print(likelihood.index(max(likelihood)))
 
@@ -136,7 +136,6 @@ plt.imshow(
 )
 plt.ylim(0, SR/2)
 
-print(len(pred))
 # Plot the predictions on top of the spectrogram
 time_axis_pred = np.linspace(0, len(pred) * size_shift, num=len(pred))
 plt.plot(time_axis_pred, pred, color="red")

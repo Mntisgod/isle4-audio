@@ -59,7 +59,7 @@ plt.xlim([0, 2000])
 plt.plot(x_data, fft_log_abs_spec)
 
 # 表示
-# plt.show()
+plt.show()
 
 # 画像ファイルに保存
 fig.savefig(wav_name.replace('.wav', '') + '-plot-spectrum-2000.png')

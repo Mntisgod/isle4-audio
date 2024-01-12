@@ -1,0 +1,11 @@
+\contentsline {section}{\numberline {1}システム概要}{2}{}%
+\contentsline {section}{\numberline {2}プログラムの説明}{3}{}%
+\contentsline {subsection}{\numberline {2.1}プログラムの構成}{3}{}%
+\contentsline {subsection}{\numberline {2.2}各関数の説明}{3}{}%
+\contentsline {subsection}{\numberline {2.3}main}{3}{}%
+\contentsline {subsubsection}{\numberline {2.3.1}openfile}{3}{}%
+\contentsline {subsubsection}{\numberline {2.3.2}is\_peak}{4}{}%
+\contentsline {subsubsection}{\numberline {2.3.3}calc}{5}{}%
+\contentsline {subsubsection}{\numberline {2.3.4}draw\_data}{6}{}%
+\contentsline {subsubsection}{\numberline {2.3.5}draw\_spectrum}{6}{}%
+\contentsline {section}{\numberline {3}工夫した点，今後の展望}{7}{}%
