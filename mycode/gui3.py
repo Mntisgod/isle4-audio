@@ -108,7 +108,7 @@ def calculate_pitch(signal, sampling_rate):
         max_peak_index = max(peakindices, key=lambda index: autocorr[index])
     # 区間ごとの周波数を計算して出力
     freq_interval = SAMPLING_RATE / max_peak_index
-    if freq_interval > 1000 and :
+    if freq_interval > 1000 and True:
         freq_interval = 0
     return freq_interval
 

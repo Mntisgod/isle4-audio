@@ -39,104 +39,28 @@ is_gui_running = False
 
 def open_file(event):
     # tkinterで読み込む
-    fTyp = [("wav file", "*.wav")]
+    # wavかmp3ファイルを選択する
+    fTyp = [("wav file", "*.wav"), ("mp3 file", "*.mp3")]
+    # fTyp = [("wav file", "*.wav")]
     iDir = os.path.abspath(os.path.dirname(__file__))
     global input_file
     print("open")
     input_file = tkinter.filedialog.askopenfilename(filetypes=fTyp, initialdir=iDir)
     # 音声ファイルを読み込む
     global x
-    print("open2")
     x, SR = librosa.load(input_file, sr=None)
     global audio_data
-    print("open3")
     audio_data = AudioSegment.from_file(input_file)
     audio_data = audio_data.set_channels(1)
     audio_data = audio_data.set_sample_width(2)
-    print(type(audio_data))
-    print("open4")
     global duration
     # ファイルサイズ（秒）
     duration = len(x) / SR
 
-    # ハミング窓
-
     def calc(x):
-        def is_peak(a, index):
-            if index == 0 or index == len(a)-1:
-                return False
-            if a[index-1] < a[index] and a[index] > a[index+1]:
-                return True
-            else:
-                return False
-        
-        # # 対数尤度の計算
-        # def calc_likelihood(x, mu, sigma):
-        #     return -0.5 * np.sum((x - mu)**2 / sigma + np.log(sigma))
-
-        # def vowel_recognition(x):
-        #     # ケプストラム計算
-        #     def get_cepstrum(x):
-        #         ceps_list = []
-        #         for i in np.arange(0, len(x)-size_frame, size_shift):
-        #             idx = int(i)  # arangeのインデクスはfloatなのでintに変換
-        #             x_frame = x[idx: idx+size_frame]
-        #             # print(x_frame)
-        #             fft_spec = np.fft.rfft(x_frame * hamming_window)
-        #             # print(fft_spec)
-        #             # 対数振幅スペクトルを計算
-        #             fft_log_abs_spec = np.log(np.abs(fft_spec))
-        #             # ケプストラム分析
-        #             ceps = np.fft.rfft(fft_log_abs_spec)
-        #             ceps = ceps[:13]
-        #             ceps = np.real(ceps)
-        #             ceps_list.append(ceps)
-        #         return ceps_list
-
-        #     # - 0.5 * np.log(2 * np.pi) * len(x)
-        #     # 音声ファイルの読み込み
-        #     wav_a = "../source/2_1_a.wav"
-        #     wav_i = "../source/2_1_i.wav"
-        #     wav_u = "../source/2_1_u.wav"
-        #     wav_e = "../source/2_1_e.wav"
-        #     wav_o = "../source/2_1_o.wav"
-
-        #     x_a, sr_a = librosa.load(wav_a, sr=SR)
-        #     x_i, sr_i = librosa.load(wav_i, sr=SR)
-        #     x_u, sr_u = librosa.load(wav_u, sr=SR)
-        #     x_e, sr_e = librosa.load(wav_e, sr=SR)
-        #     x_o, sr_o = librosa.load(wav_o, sr=SR)
-
-        #     cep_list_a = get_cepstrum(x_a)
-        #     cep_list_i = get_cepstrum(x_i)
-        #     cep_list_u = get_cepstrum(x_u)
-        #     cep_list_e = get_cepstrum(x_e)
-        #     cep_list_o = get_cepstrum(x_o)
-
-        #     mu_a = np.mean(np.array(cep_list_a), axis=0)
-        #     mu_i = np.mean(np.array(cep_list_i), axis=0)
-        #     mu_u = np.mean(np.array(cep_list_u), axis=0)
-        #     mu_e = np.mean(np.array(cep_list_e), axis=0)
-        #     mu_o = np.mean(np.array(cep_list_o), axis=0)
-
-        #     var_a = np.var(np.array(cep_list_a), axis=0)
-        #     var_i = np.var(np.array(cep_list_i), axis=0)
-        #     var_u = np.var(np.array(cep_list_u), axis=0)
-        #     var_e = np.var(np.array(cep_list_e), axis=0)
-        #     var_o = np.var(np.array(cep_list_o), axis=0)
-
-        #     return mu_a, mu_i, mu_u, mu_e, mu_o, var_a, var_i, var_u, var_e, var_o
-
-        # mu_a, mu_i, mu_u, mu_e, mu_o, var_a, var_i, var_u, var_e, var_o = vowel_recognition(x)
         # スペクトログラムを保存するlist
         spectrogram = []
-        hz_list = []
-        pred = []
-        # autocorr = np.correlate(x, x, 'full')
 
-        # 不要な前半を捨てる
-        # autocorr = autocorr[len(autocorr) // 2:] 
-        # フレーム毎にスペクトルを計算
         for i in np.arange(0, len(x)-size_frame, size_shift):
             
             # 該当フレームのデータを取得
@@ -148,38 +72,11 @@ def open_file(event):
             fft_spec = np.fft.rfft(x_frame * hamming_window)
             fft_log_abs_spec = np.log(np.abs(fft_spec))
             spectrogram.append(fft_log_abs_spec)
-            # 基本周波数
-            # 区間ごとの自己相関を取得
-            # autocorr_interval = autocorr[start_idx:end_idx]
-                # ピークのインデックスを抽出する
-            # peakindices = [i for i in range(len(autocorr_interval)) if is_peak(autocorr_interval, i)]
-            #     # インデックス0 がピークに含まれていれば捨てる
-            # peakindices = [i for i in peakindices if i != 0]
-            # # 自己相関が最大となるインデックスを得る
-            # if peakindices:
-            #     max_peak_index = max(peakindices, key=lambda index: autocorr_interval[index])
-            # max_peak_index_interval = np.argmax(autocorr_interval)
-            # 区間ごとの周波数を計算して出力
-            # freq_interval = SR / max_peak_index
-            # hz_list.append(freq_interval)
 
-            # 母音の判定
-            # cep = np.real(np.fft.rfft(fft_log_abs_spec))
-            # cep = cep[:13]
-            # likelihood_a = calc_likelihood(cep, mu_a, var_a)
-            # likelihood_i = calc_likelihood(cep, mu_i, var_i)
-            # likelihood_u = calc_likelihood(cep, mu_u, var_u)
-            # likelihood_e = calc_likelihood(cep, mu_e, var_e)
-            # likelihood_o = calc_likelihood(cep, mu_o, var_o)
-            # likelihood = [likelihood_a, likelihood_i, likelihood_u, likelihood_e, likelihood_o]
-            # pred.append((likelihood.index(max(likelihood))+ 1)* SR / 10)
+        return spectrogram
 
-        return spectrogram, hz_list, pred
-     
-    print("open5")
     global spectrogram
-    spectrogram, hz_list, pred = calc(x)
-    print("open6")
+    spectrogram = calc(x)
 
     # Tkinterのウィジェットを階層的に管理するためにFrameを使用
     # frame1 ... スペクトログラムを表示
@@ -189,7 +86,7 @@ def open_file(event):
     frame1.pack(side="left")
     frame2.pack(side="left")
 
-    def _draw_data(spectrogram, hz_list, pred):
+    def _draw_data(spectrogram):
         # まずはスペクトログラムを描画
         fig, ax = plt.subplots()
         canvas = FigureCanvasTkAgg(fig, master=frame1)    # masterに対象とするframeを指定
@@ -197,23 +94,18 @@ def open_file(event):
         ax1.set_xlabel('sec')
         ax1.set_ylabel('frequency [Hz]')
         ax1.imshow(
-            np.flipud(np.array(spectrogram).T),
+            np.flipud(np.array(spectrogram)),
             extent=[0, duration, 0, 8000],
             aspect='auto',
+            cmap='inferno',
             interpolation='nearest'
         )
         # 続いて右側のy軸を追加して，音量を重ねて描画
         ax3 = ax1.twinx()
         ax3.set_ylabel('frequency [Hz]')
-        # x_data = np.linspace(0, duration, len(hz_list))
-        # ax3.plot(x_data, hz_list, c='b')
-        # ax3.plot(x_data, pred, c='r')
-        # time_axis_pred = np.linspace(0, len(pred) * size_shift, num=len(pred))
-        # plt.plot(time_axis_pred, pred, color="red")
         canvas.get_tk_widget().pack(side="left")    # 最後にFrameに追加する処理
 
-    _draw_data(spectrogram, hz_list, pred)
-    print("open7")
+    _draw_data(spectrogram)
 
     # スペクトルを表示する領域を確保
     # ax2, canvs2 を使って上記のコールバック関数でグラフを描画する
@@ -222,7 +114,6 @@ def open_file(event):
     canvas2 = FigureCanvasTkAgg(fig2, master=frame2)
     canvas2.get_tk_widget().pack(side="top")    # "top"は上部方向にウィジェットを積むことを意味する
 
-    print("open8")
     # スライドバーを作成
     global scale
     scale = tkinter.Scale(
@@ -239,18 +130,20 @@ def open_file(event):
     )
     scale.pack(side="top")
 
+
 # スライドバーの値を更新する関数
 def update_slider_position():
     # スライドバーの値を再生位置に合わせる
     scale.set(now_playing_sec)
 
+
 # スライドバーの値が変更されたときに呼び出されるコールバック関数
 # ここで右側のグラフに
 # vはスライドバーの値
-def draw_spectrum(v, spectrogram, ax2, canvas2, duration):
+def draw_spectrum(t, spectrogram, ax2, canvas2, duration):
 
     # スライドバーの値からスペクトルのインデクスおよびそのスペクトルを取得
-    index = int((len(spectrogram)-1) * (float(v) / duration))
+    index = int((len(spectrogram)-1) * (float(t) / duration))
     spectrum = spectrogram[index]
 
     # 直前のスペクトル描画を削除し，新たなスペクトルを描画
@@ -258,15 +151,16 @@ def draw_spectrum(v, spectrogram, ax2, canvas2, duration):
     x_data = np.fft.rfftfreq(size_frame, d=1/SR)
     ax2.plot(x_data, spectrum)
     ax2.set_ylim(-10, 5)
-    ax2.set_xlim(0, SR/2)
+    ax2.set_xscale('log')
+    ax2.set_xlim(10, SR/2)
     ax2.set_ylabel('amblitude')
     ax2.set_xlabel('frequency [Hz]')
+
     canvas2.draw()
 
 
 # pydubで読み込んだ音楽ファイルを再生する部分のみ関数化する
 # 別スレッドで実行するため
-
 def set_music():
     # この関数は別スレッドで実行するため
     # メインスレッドで定義した以下の２つの変数を利用できるように global 宣言する
@@ -291,9 +185,10 @@ def set_music():
     amplitude = float(amp.get())
     is_voice_change = var.get()
 
-
+    # ピッチを変える
+    # audio_data = audio_data.set_frame_rate(int(audio_data.frame_rate * (1 + D * np.sin(2 * np.pi * R * np.arange(len(audio_data)) / SR))))
+    # audio_data = audio_data * 2 ** (1)
     # make_chunks関数を使用して一定のフレーム毎に音楽ファイルを読み込む
-    #
     # なぜ再生するだけのためにフレーム毎の処理をするのか？
     # 音楽ファイルに対しても何らかの処理を行えるようにするため（このサンプルプログラムでは行っていない）
     # おまけに，再生位置も計算することができる
@@ -309,15 +204,8 @@ def set_music():
         print(chunk._data)
         # データの取得
         data_music = np.array(chunk.get_array_of_samples())        
-        # data_music = data_music / np.iinfo(np.int16).max   
-        # type(chunk.get_array_of_samples())
-        # 正規化
-        # data_music_changed = data_music * (1 + D * np.sin(2 * np.pi * R * np.arange(len(data_music)) / SR))
-        # data_music_changed = data_music_changed.astype('int16')
-
         data = data_music * (1 + D * np.sin(2 * np.pi * R * np.arange(len(data_music)) / SR))
         data = data.astype('int16')
-
 
         # 正弦波を生成する関数
         # sampling_rate ... サンプリングレート
@@ -340,55 +228,23 @@ def set_music():
             # 正弦波を生成する
             sin_wave = generate_sinusoid(SR, frequency, duration/SR)
 
-            # 最大値を0.9にする
+            # 最大値を指定
             sin_wave = sin_wave * amplitude
             data = data * sin_wave
             data = data.astype('int16')
 
         sound = AudioSegment(data=b''.join(data),
-                            sample_width=2, 
-                            frame_rate=44100, 
-                            channels=1
-                        )
+                             sample_width=2,
+                             frame_rate=44100,
+                             channels=1
+                             )
         # pyaudioの再生ストリームに切り出した音楽データを流し込む
         # 再生が完了するまで処理はここでブロックされる
         stream_play.write(sound._data)
-        
+
         # 現在の再生位置を計算（単位は秒）
         now_playing_sec = (idx * size_frame_music) / 1000.
-        
         idx += 1
-
-        #
-        # 【補足】
-        # 楽曲のスペクトログラムを計算する場合には下記のように楽曲のデータを受け取る
-        # ただし，音声データの値は -1.0~1.0 ではなく，16bit の整数値であるので正規化を施している
-        # また十分なサイズの音声データを確保してからfftを実行すること
-        # 楽曲が44.1kHzの場合，44100 / (1000/10) のサイズのデータとなる
-        # 以下では処理のみを行い，表示はしない．表示をするには animate 関数の
-        # 中身を変更すること 
-
-        #
-        # 以下はマイク入力のときと同様
-        #
-
-        # 現在のフレームとこれまでに入力されたフレームを連結
-        x_stacked_data_music = np.concatenate([x_stacked_data_music, data_music])
-
-        # フレームサイズ分のデータがあれば処理を行う
-        # if len(x_stacked_data_music) >= size_frame:
-        #     # フレームサイズからはみ出した過去のデータは捨てる
-        #     x_stacked_data_music = x_stacked_data_music[len(x_stacked_data_music)-size_frame:]
-
-        #     # スペクトルを計算
-        #     fft_spec = np.fft.rfft(x_stacked_data_music * hamming_window)
-        #     fft_log_abs_spec = np.log10(np.abs(fft_spec) + EPSILON)[:-1]
-
-        #     # ２次元配列上で列方向（時間軸方向）に１つずらし（戻し）
-        #     # 最後の列（＝最後の時刻のスペクトルがあった位置）に最新のスペクトルデータを挿入
-        #     spectrogram_data_music = np.roll(spectrogram_data_music, -1, axis=1)
-        #     spectrogram_data_music[:, -1] = fft_log_abs_spec
-        # update_slider_position()
 
 
 # 再生時間の表示を随時更新する関数
@@ -400,6 +256,7 @@ def update_gui_text():
         draw_spectrum(now_playing_sec, spectrogram, ax2, canvas2, duration)
         update_slider_position()
         time.sleep(0.01)
+
 
 def play_music(event):
     # 再生時間を表す
@@ -415,136 +272,138 @@ def play_music(event):
     t_update_gui.start()
 
 
-# Tkinterを初期化
-root = tkinter.Tk()
-root.wm_title("EXP4-AUDIO-SAMPLE")
+if __name__ == '__main__':
+    # Tkinterを初期化
+    root = tkinter.Tk()
+    root.wm_title("EXP4-AUDIO-SAMPLE")
 
-# トレモロの係数を変更する
-d = tkinter.StringVar(root)
-r = tkinter.StringVar(root)
+    # トレモロの係数を変更する
+    d = tkinter.StringVar(root)
+    r = tkinter.StringVar(root)
 
 
-# ファイルを開く
-open_file_button = tkinter.Button(root, text='Open file')
-open_file_button.pack(side=tkinter.TOP)
-open_file_button.bind('<Button-1>', open_file)
+    # ファイルを開く
+    open_file_button = tkinter.Button(root, text='Open file')
+    open_file_button.pack(side=tkinter.TOP)
+    open_file_button.bind('<Button-1>', open_file)
 
-# 再生ボタン
-play_music_button = tkinter.Button(root, text='Play music')
-play_music_button.pack(side=tkinter.BOTTOM)
-play_music_button.bind('<Button-1>', play_music)
+    # 再生ボタン
+    play_music_button = tkinter.Button(root, text='Play music')
+    play_music_button.pack(side=tkinter.BOTTOM)
+    play_music_button.bind('<Button-1>', play_music)
 
-# トレモロの係数を変更する
-# Scaleで設定
-# tkinterでスライドバーを作成する
+    # トレモロの係数を変更する
+    # Scaleで設定
+    # tkinterでスライドバーを作成する
 
-# ボイスチェンジャの係数を変更する
-f = tkinter.StringVar(root)
-amp = tkinter.StringVar(root)
-# トレモロのframe
-frame_t = tkinter.Frame(
-    root,
-    relief="ridge",
-    borderwidth=4, 
-    )
-frame_t.pack(side=tkinter.LEFT)
-# Labelの生成
-label_d = tkinter.Label(
-    frame_t,
-    textvariable=d,   #varを表示
-    relief="ridge",
-    text="トレモロの深さ"
-    )
-label_d.pack()
+    # ボイスチェンジャの係数を変更する
+    f = tkinter.StringVar(root)
+    amp = tkinter.StringVar(root)
+    # トレモロのframe
+    frame_t = tkinter.Frame(
+        root,
+        relief="ridge",
+        borderwidth=20, 
+        )
+    frame_t.pack(side=tkinter.LEFT)
+    # Labelの生成
+    label_d = tkinter.Label(
+        frame_t,
+        textvariable=d,   #varを表示
+        relief="ridge",
+        text="トレモロの深さ"
+        )
+    label_d.pack()
 
-#Scaleの生成
-scale_d = tkinter.Scale(
-    frame_t,
-    variable=d,   #スケールの値をvarにセット
-    from_=0,                    # 最小値
-    to=10,                # 最大値
-    resolution=0.1,    # 刻み幅
-    orient=tkinter.HORIZONTAL,    # 横方向にスライド    
-    )
-scale_d.pack()
+    #Scaleの生成
+    scale_d = tkinter.Scale(
+        frame_t,
+        variable=d,   #スケールの値をvarにセット
+        from_=0,                    # 最小値
+        to=10,                # 最大値
+        width=10,
+        resolution=0.1,    # 刻み幅
+        )
+    scale_d.pack()
 
-# Labelの生成
-label_r = tkinter.Label(
-    frame_t,
-    textvariable=r,   #varを表示
-    relief="ridge",
-    text="トレモロの速さ"
-    )
-label_r.pack()
+    # Labelの生成
+    label_r = tkinter.Label(
+        frame_t,
+        textvariable=r,   #varを表示
+        relief="ridge",
+        text="トレモロの速さ"
+        )
+    label_r.pack()
 
-#Scaleの生成
-scale_r = tkinter.Scale(
-    frame_t,
-    variable=r,   #スケールの値をvarにセット
-    from_=0,                    # 最小値
-    to=10,                # 最大値
-    resolution=0.1,    # 刻み幅
-    orient=tkinter.HORIZONTAL,    # 横方向にスライド
-    )
-scale_r.pack()
+    #Scaleの生成
+    scale_r = tkinter.Scale(
+        frame_t,
+        variable=r,   #スケールの値をvarにセット
+        from_=0,                    # 最小値
+        to=10,                # 最大値
+        resolution=0.1,    # 刻み幅
+        width=10,
+        )
+    scale_r.pack()
 
-# ボイスチェンジャの係数を変更する
-# ボイスチェンジャのframe
-frame_v = tkinter.Frame(
-    root,
-    relief="ridge",
-    borderwidth=4,
-    )
-frame_v.pack(side=tkinter.LEFT)
-# Labelの生成
+    # ボイスチェンジャの係数を変更する
+    # ボイスチェンジャのframe
+    frame_v = tkinter.Frame(
+        root,
+        relief="ridge",
+        borderwidth=20,
+        )
+    frame_v.pack(side=tkinter.LEFT)
+    # Labelの生成
 
-label_f = tkinter.Label(
-    frame_v,
-    textvariable=f,   #varを表示
-    relief="ridge",
-    text="ボイスチェンジャにかける正弦波の周波数"
-    )
-label_f.pack()
+    label_f = tkinter.Label(
+        frame_v,
+        textvariable=f,
+        relief="ridge",
+        text="ボイスチェンジャにかける正弦波の周波数"
+        )
+    label_f.pack()
 
-#Scaleの生成
-scale_f = tkinter.Scale(
-    frame_v,
-    variable=f,   #スケールの値をvarにセット
-    from_=0,                    # 最小値
-    to=1000,                # 最大値
-    resolution=1,    # 刻み幅
-    orient=tkinter.HORIZONTAL,    # 横方向にスライド
-    )
-scale_f.pack()
+    #Scaleの生成
+    scale_f = tkinter.Scale(
+        frame_v,
+        variable=f,
+        from_=0,  # 最小値
+        to=1000,  # 最大値
+        width=10,
+        resolution=1,  # 刻み幅
+        )
+    scale_f.pack()
 
-label_amp = tkinter.Label(
-    frame_v,
-    textvariable=amp,   #varを表示
-    relief="ridge",
-    text="ボイスチェンジャにかける正弦波の周波数"
-    )
-label_amp.pack()
+    label_amp = tkinter.Label(
+        frame_v,
+        textvariable=amp,
+        relief="ridge",
+        text="ボイスチェンジャにかける正弦波の周波数"
+        )
+    label_amp.pack()
 
-#Scaleの生成
-scale_amp = tkinter.Scale(
-    frame_v,
-    variable=amp,   #スケールの値をvarにセット
-    from_=0,                    # 最小値
-    to=1,                # 最大値
-    resolution=0.01,    # 刻み幅
-    orient=tkinter.HORIZONTAL,    # 横方向にスライド
-    )
-scale_amp.pack()
+    #Scaleの生成
+    scale_amp = tkinter.Scale(
+        frame_v,
+        variable=amp,  # スケールの値をvarにセット
+        from_=0,                    # 最小値
+        to=1,                # 最大値
+        width=10,
+        resolution=0.01,    # 刻み幅
+        # orient=tkinter.HORIZONTAL,    # 横方向にスライド
+        )
+    scale_amp.pack()
 
-# ボイスチェンジをするかどうか
-# checkbuttonの生成
-var = tkinter.BooleanVar()
-var.set(False)
-c = tkinter.Checkbutton(
-    root,
-    variable=var,
-    text="use voice changer"
-    )
-c.pack(side=tkinter.LEFT)
+    # ボイスチェンジをするかどうか
+    # checkbuttonの生成
+    var = tkinter.BooleanVar()
+    var.set(False)
+    c = tkinter.Checkbutton(
+        root,
+        variable=var,
+        text="use voice changer"
+        )
+    c.pack(side=tkinter.LEFT)
 
-tkinter.mainloop()
+    tkinter.mainloop()
