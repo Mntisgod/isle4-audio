@@ -21,7 +21,7 @@ from pydub import AudioSegment
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 size_frame = 4096    # フレームサイズ
-SR = 16000        # サンプリングレート
+SR = 16000     # サンプリングレート
 size_shift = SR / 100    # シフトサイズ = 0.01 秒 (10 msec)
 x = None           # 音声波形データ
 is_playing = False    # 再生中かどうか
@@ -47,10 +47,12 @@ def open_file(event):
     # 音声ファイルを読み込む
     global x
     print("open2")
-    x, _ = librosa.load(input_file, sr=SR)
+    x, SR = librosa.load(input_file, sr=None)
     global audio_data
     print("open3")
-    audio_data = AudioSegment.from_wav(input_file)
+    audio_data = AudioSegment.from_file(input_file)
+    audio_data = audio_data.set_channels(1)
+    audio_data = audio_data.set_sample_width(2)
     print(type(audio_data))
     print("open4")
     global duration
@@ -268,13 +270,8 @@ def draw_spectrum(v, spectrogram, ax2, canvas2, duration):
 def set_music():
     # この関数は別スレッドで実行するため
     # メインスレッドで定義した以下の２つの変数を利用できるように global 宣言する
-    global is_gui_running, now_playing_sec, x, audio_data, now_playing_sec, x_stacked_data_music, spectrogram_data_music
+    global is_gui_running, now_playing_sec, audio_data, now_playing_sec, x_stacked_data_music
 
-    # トレモロの係数をかける
-    # audio_data = audio_data * (1 + D * np.sin(2 * np.pi * R * np.arange(len(audio_data)) / SR))
-
-    # 値の範囲を[-1.0 ~ +1.0] から [-32768 ~ +32767] へ変換する
-    # audio_changed = (audio_changed * 32768.0). astype('int16')
     p_play = pyaudio.PyAudio()
     stream_play = p_play.open(
         format=p_play.get_format_from_width(audio_data.sample_width),	# ストリームを読み書きするときのデータ型
@@ -290,6 +287,11 @@ def set_music():
     idx = 0
     D = float(d.get())
     R = float(r.get())
+    freq = float(f.get())
+    amplitude = float(amp.get())
+    is_voice_change = var.get()
+
+
     # make_chunks関数を使用して一定のフレーム毎に音楽ファイルを読み込む
     #
     # なぜ再生するだけのためにフレーム毎の処理をするのか？
@@ -300,17 +302,57 @@ def set_music():
         # GUIが終了してれば，この関数の処理も終了する
         if is_gui_running == False:
             break
-
+        
+        print(chunk.sample_width)
+        print(chunk.frame_rate)
+        print(chunk.channels)
+        print(chunk._data)
         # データの取得
-        data_music = np.array(chunk.get_array_of_samples())
+        data_music = np.array(chunk.get_array_of_samples())        
+        # data_music = data_music / np.iinfo(np.int16).max   
         # type(chunk.get_array_of_samples())
         # 正規化
-        data_music_changed = data_music * (1 + D * np.sin(2 * np.pi * R * np.arange(len(data_music)) / SR))
-        chunk = make_chunks(data_music_changed, size_frame_music)
+        # data_music_changed = data_music * (1 + D * np.sin(2 * np.pi * R * np.arange(len(data_music)) / SR))
+        # data_music_changed = data_music_changed.astype('int16')
 
+        data = data_music * (1 + D * np.sin(2 * np.pi * R * np.arange(len(data_music)) / SR))
+        data = data.astype('int16')
+
+
+        # 正弦波を生成する関数
+        # sampling_rate ... サンプリングレート
+        # frequency ... 生成する正弦波の周波数
+        # duration ... 生成する正弦波の時間的長さ
+        def generate_sinusoid(sampling_rate, frequency, duration):
+            sampling_interval = 1.0 / sampling_rate
+            t = np.arange(sampling_rate * duration) * sampling_interval
+            waveform = np.sin(2.0 * np.pi * frequency * t)
+            return waveform
+
+        # 元の音声と正弦波を重ね合わせる
+        if is_voice_change:
+            # 生成する正弦波の周波数（Hz）
+            frequency = freq
+
+            # 生成する正弦波の時間的長さ
+            duration = len(data_music)
+
+            # 正弦波を生成する
+            sin_wave = generate_sinusoid(SR, frequency, duration/SR)
+
+            # 最大値を0.9にする
+            sin_wave = sin_wave * amplitude
+            data = data * sin_wave
+            data = data.astype('int16')
+
+        sound = AudioSegment(data=b''.join(data),
+                            sample_width=2, 
+                            frame_rate=44100, 
+                            channels=1
+                        )
         # pyaudioの再生ストリームに切り出した音楽データを流し込む
         # 再生が完了するまで処理はここでブロックされる
-        stream_play.write(chunk._data)
+        stream_play.write(sound._data)
         
         # 現在の再生位置を計算（単位は秒）
         now_playing_sec = (idx * size_frame_music) / 1000.
@@ -325,7 +367,7 @@ def set_music():
         # 楽曲が44.1kHzの場合，44100 / (1000/10) のサイズのデータとなる
         # 以下では処理のみを行い，表示はしない．表示をするには animate 関数の
         # 中身を変更すること 
-        data_music = data_music / np.iinfo(np.int32).max   
+
         #
         # 以下はマイク入力のときと同様
         #
@@ -376,6 +418,8 @@ def play_music(event):
 # Tkinterを初期化
 root = tkinter.Tk()
 root.wm_title("EXP4-AUDIO-SAMPLE")
+
+# トレモロの係数を変更する
 d = tkinter.StringVar(root)
 r = tkinter.StringVar(root)
 
@@ -394,38 +438,113 @@ play_music_button.bind('<Button-1>', play_music)
 # Scaleで設定
 # tkinterでスライドバーを作成する
 
+# ボイスチェンジャの係数を変更する
+f = tkinter.StringVar(root)
+amp = tkinter.StringVar(root)
+# トレモロのframe
+frame_t = tkinter.Frame(
+    root,
+    relief="ridge",
+    borderwidth=4, 
+    )
+frame_t.pack(side=tkinter.LEFT)
 # Labelの生成
 label_d = tkinter.Label(
-    root,
+    frame_t,
     textvariable=d,   #varを表示
     relief="ridge",
+    text="トレモロの深さ"
     )
 label_d.pack()
 
 #Scaleの生成
 scale_d = tkinter.Scale(
-    root,
+    frame_t,
     variable=d,   #スケールの値をvarにセット
+    from_=0,                    # 最小値
+    to=10,                # 最大値
+    resolution=0.1,    # 刻み幅
+    orient=tkinter.HORIZONTAL,    # 横方向にスライド    
     )
 scale_d.pack()
 
 # Labelの生成
 label_r = tkinter.Label(
-    root,
+    frame_t,
     textvariable=r,   #varを表示
     relief="ridge",
+    text="トレモロの速さ"
     )
 label_r.pack()
 
 #Scaleの生成
 scale_r = tkinter.Scale(
-    root,
+    frame_t,
     variable=r,   #スケールの値をvarにセット
+    from_=0,                    # 最小値
+    to=10,                # 最大値
+    resolution=0.1,    # 刻み幅
+    orient=tkinter.HORIZONTAL,    # 横方向にスライド
     )
 scale_r.pack()
 
+# ボイスチェンジャの係数を変更する
+# ボイスチェンジャのframe
+frame_v = tkinter.Frame(
+    root,
+    relief="ridge",
+    borderwidth=4,
+    )
+frame_v.pack(side=tkinter.LEFT)
+# Labelの生成
 
+label_f = tkinter.Label(
+    frame_v,
+    textvariable=f,   #varを表示
+    relief="ridge",
+    text="ボイスチェンジャにかける正弦波の周波数"
+    )
+label_f.pack()
 
+#Scaleの生成
+scale_f = tkinter.Scale(
+    frame_v,
+    variable=f,   #スケールの値をvarにセット
+    from_=0,                    # 最小値
+    to=1000,                # 最大値
+    resolution=1,    # 刻み幅
+    orient=tkinter.HORIZONTAL,    # 横方向にスライド
+    )
+scale_f.pack()
 
+label_amp = tkinter.Label(
+    frame_v,
+    textvariable=amp,   #varを表示
+    relief="ridge",
+    text="ボイスチェンジャにかける正弦波の周波数"
+    )
+label_amp.pack()
+
+#Scaleの生成
+scale_amp = tkinter.Scale(
+    frame_v,
+    variable=amp,   #スケールの値をvarにセット
+    from_=0,                    # 最小値
+    to=1,                # 最大値
+    resolution=0.01,    # 刻み幅
+    orient=tkinter.HORIZONTAL,    # 横方向にスライド
+    )
+scale_amp.pack()
+
+# ボイスチェンジをするかどうか
+# checkbuttonの生成
+var = tkinter.BooleanVar()
+var.set(False)
+c = tkinter.Checkbutton(
+    root,
+    variable=var,
+    text="use voice changer"
+    )
+c.pack(side=tkinter.LEFT)
 
 tkinter.mainloop()
