@@ -1,19 +1,9 @@
-#
-# 計算機科学実験及演習 4「音響信号処理」
-# サンプルソースコード
-#
-# 簡易カラオケシステム
-#
-# mp3ファイルを別スレッドで再生しつつ
-# マイクからの音声入力に対してスペクトログラムとパワーを計算して表示する
-# 上記をリアルタイムで逐次処理を行う
-#
-
 # ライブラリの読み込み
 import pyaudio
 import numpy as np
 import threading
 import time
+import math
 
 # matplotlib関連＼
 import matplotlib.animation as animation
@@ -22,6 +12,7 @@ from matplotlib.colors import Normalize
 
 # GUI関連
 import tkinter
+import tkmacosx
 from matplotlib.backends.backend_tkagg import (
     FigureCanvasTkAgg, NavigationToolbar2Tk)
 
@@ -75,8 +66,67 @@ is_gui_running = False
 # ここでは最新のスペクトログラムと音量のデータを格納する
 # 再描画はmatplotlib animationが行う
 
+# 周波数からノートナンバーへ変換（notenumber.pyより）
+def hz2nn(frequency):
+    if frequency == 0:
+        return 0
+    return int(round(12.0 * (math.log(frequency / 440.0) / math.log(2.0)))) + 69
 
-def calculate_pitch(signal, sampling_rate):
+def nn2key(notenum):
+    if notenum <= 23:
+        return '0'
+    key = notenum % 12
+    if key == 0:
+        return 'C' + str(notenum // 12 - 1)
+    elif key == 1:
+        return 'C#' + str(notenum // 12 - 1)
+    elif key == 2:
+        return 'D' + str(notenum // 12 - 1)
+    elif key == 3:
+        return 'D#' + str(notenum // 12 - 1)
+    elif key == 4:
+        return 'E' + str(notenum // 12 - 1)
+    elif key == 5:
+        return 'F' + str(notenum // 12 - 1)
+    elif key == 6:
+        return 'F#' + str(notenum // 12 - 1)
+    elif key == 7:
+        return 'G' + str(notenum // 12 - 1)
+    elif key == 8:
+        return 'G#' + str(notenum // 12 - 1)
+    elif key == 9:
+        return 'A' + str(notenum // 12 - 1)
+    elif key == 10:
+        return 'A#' + str(notenum // 12 - 1)
+    elif key == 11:
+        return 'B' + str(notenum // 12 - 1)
+    else:
+        return 'error'
+
+
+def light_up_button(nn):
+    btn = btn_list[nn]
+    # btnの色を変える
+    print(nn)
+    # btn.update()
+    btn['bg'] = 'red'
+    # btn.config(bg='red')
+    # btn.place()
+
+    # if nn % 12 == 0 or nn % 12 == 2 or nn % 12 == 4 or nn % 12 == 5 or nn % 12 == 7 or nn % 12 == 9 or nn % 12 == 11:
+        # btn.place()
+        # root.after(100, lambda: change_color(btn, 'red'))
+        # btn.place()
+    # else:
+        # btn.place()
+        # root.after(100, lambda: change_color(btn, 'yellow'))
+        # print("hoge")
+        # btn.place()
+
+def change_color(btn, color):
+    btn['bg'] = color
+
+def calculate_pitch(signal, vol):
     """
     Calculate pitch (fundamental frequency) using autocorrelation.
 
@@ -106,9 +156,11 @@ def calculate_pitch(signal, sampling_rate):
     # 自己相関が最大となるインデックスを得る
     if peakindices:
         max_peak_index = max(peakindices, key=lambda index: autocorr[index])
-    # 区間ごとの周波数を計算して出力
-    freq_interval = SAMPLING_RATE / max_peak_index
-    if freq_interval > 1000 and True:
+        freq_interval = SAMPLING_RATE / max_peak_index
+    else:
+        max_peak_index = 0
+        freq_interval = 0
+    if freq_interval > 550 or vol < -100:
         freq_interval = 0
     return freq_interval
 
@@ -128,9 +180,8 @@ def animate(frame_index):
 
     # この上の処理を下記のようにすれば楽曲のスペクトログラムが表示される
     ax1_sub.set_array(spectrogram_data_music * 3)
-
     ax2_sub.set_data(time_x_data, pitch_data)
-
+    plt.yticks(note_freq, note_name)
     return ax1_sub, ax2_sub
 
 # GUIで表示するための処理（Tkinter）
@@ -150,7 +201,9 @@ freq_y_data = np.linspace(10, 1000, MAX_NUM_SPECTROGRAM)
 # この numpy array にデータが更新されていく
 spectrogram_data = np.zeros((len(freq_y_data), len(time_x_data)))
 volume_data = np.zeros(len(time_x_data))
+# str型で音程を格納するデータ
 pitch_data = np.zeros(len(time_x_data))
+music_pitch_data = np.zeros(len(time_x_data))
 
 # 楽曲のスペクトログラムを格納するデータ（このサンプルでは計算のみ）
 spectrogram_data_music = np.zeros((len(freq_y_data), len(time_x_data)))
@@ -171,18 +224,26 @@ ax1_sub = ax1.pcolormesh(
     Y,
     spectrogram_data,
     shading='nearest',    # 描画スタイル
-    cmap='jet',            # カラーマップ
+    cmap='plasma',            # カラーマップ
     norm=Normalize(SPECTRUM_MIN, SPECTRUM_MAX)    # 値の最小値と最大値を指定して，それに色を合わせる
 )
 ax1.set_yscale('log')
-# 音量を表示するために反転した軸を作成
+
+note_freq = [440 * 2 ** ((i - 69) / 12) for i in range(24, 73, 12)]
+note_name = [nn2key(i) for i in range(24, 73, 12)]
+print(note_name)
+print(note_freq)
+# 入力波形の基本周波数を表示するため軸を作成
 ax2 = ax1.twinx()
+plt.yticks(note_freq, note_name)
 ax2.set_yscale('log')
 ax2.set_ylim(10, 1000)
-
 # 基本周波数をプロットする
 # 戻り値はデータの更新 & 再描画のために必要
 ax2_sub, = ax2.plot(time_x_data, pitch_data, c='r')
+
+# 同じ軸に楽曲の基本周波数を表示する
+# ax2_sub2 = ax2.plot(time_x_data, music_pitch_data, c='black')
 
 # ラベルの設定
 ax1.set_xlabel('sec')                # x軸のラベルを設定
@@ -208,6 +269,10 @@ text.set('0.0')
 label = tkinter.Label(master=root, textvariable=text, font=("", 30))
 label.pack()
 
+pitch_text = tkinter.StringVar()
+pitch_text.set('')
+label = tkinter.Label(master=root, textvariable=pitch_text, font=("", 30))
+label.pack()
 # 終了ボタンが押されたときに呼び出される関数
 # ここではGUIを終了する
 def _quit():
@@ -262,10 +327,20 @@ def input_callback(in_data, frame_count, time_info, status_flags):
         # 基本周波数を計算
         # ここに基本周波数を計算する処理を書く
         # ただし，基本周波数を計算する関数は別途作成すること
-        pitch = calculate_pitch(x_stacked_data, SAMPLING_RATE)
+        pitch = calculate_pitch(x_stacked_data, vol)
         pitch_data = np.roll(pitch_data, -1)
         pitch_data[-1] = pitch
-        print(pitch)
+        nn = hz2nn(pitch)
+        key = nn2key(nn)
+        pitch_text.set(key)
+        if key != '0':
+        # 別スレッドで実行するため，GUIの更新は root.after を用いる
+            light_up_button(nn-24)
+            # root.after(0, light_up_button, nn-24)
+        # btn_list[nn-24].invoke()
+
+
+        # print()
     
     # 戻り値は pyaudio の仕様に従うこと
     return None, pyaudio.paContinue
@@ -290,7 +365,7 @@ stream = p.open(
 
 # mp3ファイル名
 # ここは各自の音源ファイルに合わせて変更すること
-filename = './monokongyo.mp3'
+filename = './shs-test-midi.wav'
 
 #
 # 【注意】なるべく1チャネルの音声を利用すること
@@ -299,7 +374,7 @@ filename = './monokongyo.mp3'
 #
 
 # pydubを使用して音楽ファイルを読み込む
-audio_data = AudioSegment.from_mp3(filename)
+audio_data = AudioSegment.from_file(filename)
 
 # 音声ファイルの再生にはpyaudioを使用
 # ここではpyaudioの再生ストリームを作成
@@ -343,9 +418,6 @@ def play_music():
             break
 
         # pyaudioの再生ストリームに切り出した音楽データを流し込む
-        # 再生が完了するまで処理はここでブロックされる
-        stream_play.write(chunk._data)
-        
         # 現在の再生位置を計算（単位は秒）
         now_playing_sec = (idx * size_frame_music) / 1000.
         
@@ -365,6 +437,7 @@ def play_music():
         # 正規化
         data_music = data_music / np.iinfo(np.int32).max    
 
+        
         #
         # 以下はマイク入力のときと同様
         #
@@ -386,6 +459,13 @@ def play_music():
             # 最後の列（＝最後の時刻のスペクトルがあった位置）に最新のスペクトルデータを挿入
             spectrogram_data_music = np.roll(spectrogram_data_music, -1, axis=1)
             spectrogram_data_music[:, -1] = fft_log_abs_spec
+
+            # pitch = calculate_pitch(x_stacked_data_music, 0)
+            # music_pitch_data = np.roll(pitch_data, -1)
+            # music_pitch_data[-1] = pitch
+        # 再生が完了するまで処理はここでブロックされる
+        stream_play.write(chunk._data)
+        
 
 # 再生時間の表示を随時更新する関数
 def update_gui_text():
@@ -422,6 +502,124 @@ is_gui_running = True
 # 上記で設定したスレッドを開始（直前のフラグを立ててから）
 t_play_music.start()
 t_update_gui.start()
+
+# frame_v = tkinter.Frame(
+#         root,
+#         relief="ridge",
+#         borderwidth=20,
+#         )
+# frame_v.pack(side=tkinter.BOTTOM)
+btn01 = tkinter.Button(root, text='', bg='white', command=lambda:light_up_button(0))
+btn01.place(x=190, y=30, height=100, width=30)
+btn02 = tkinter.Button(root, bg='black', command=lambda:light_up_button(1))
+btn02.place(x=210, y=30, height=60, width=20)
+btn03 = tkinter.Button(root, text='', bg='white', command=lambda:light_up_button(2))
+btn03.place(x=220, y=30, height=100, width=30)
+btn04 = tkinter.Button(root, bg='black', command=lambda:light_up_button(3))
+btn04.place(x=240, y=30, height=60, width=20)
+btn05 = tkinter.Button(root, text='', bg='white', command=lambda:light_up_button(4))
+btn05.place(x=250, y=30, height=100, width=30)
+btn06 = tkinter.Button(root, text='', bg='white', command=lambda:light_up_button(5))
+btn06.place(x=280, y=30, height=100, width=30)
+btn07 = tkinter.Button(root, bg='black', command=lambda:light_up_button(6))
+btn07.place(x=300, y=30, height=60, width=20)
+btn08 = tkinter.Button(root, text='', bg='white', command=lambda:light_up_button(7))
+btn08.place(x=310, y=30, height=100, width=30)
+btn09 = tkinter.Button(root, bg='black', command=lambda:light_up_button(8))
+btn09.place(x=330, y=30, height=60, width=20)
+btn10 = tkinter.Button(root, text='', bg='white', command=lambda:light_up_button(9))
+btn10.place(x=340, y=30, height=100, width=30)
+btn11 = tkinter.Button(root, bg='black', command=lambda:light_up_button(10))
+btn11.place(x=360, y=30, height=60, width=20)
+btn12 = tkinter.Button(root, text='', bg='white', command=lambda:light_up_button(11))
+btn12.place(x=370, y=30, height=100, width=30)
+
+
+btn13 = tkinter.Button(root, text='', bg='white', command= lambda:light_up_button(12))
+btn13.place(x=400, y=30, height=100, width=30)
+btn14 = tkinter.Button(root, bg='black', command=lambda:light_up_button(13))
+btn14.place(x=420, y=30, height=60, width=20)
+btn15 = tkinter.Button(root, text='', bg='white', command=lambda:light_up_button(14))
+btn15.place(x=430, y=30, height=100, width=30)
+btn16 = tkinter.Button(root, bg='black', command=lambda:light_up_button(15))
+btn16.place(x=450, y=30, height=60, width=20)
+btn17 = tkinter.Button(root, text='', bg='white', command=lambda:light_up_button(16))
+btn17.place(x=460, y=30, height=100, width=30)
+btn18 = tkinter.Button(root, text='', bg='white', command=lambda:light_up_button(17))
+btn18.place(x=490, y=30, height=100, width=30)
+btn19 = tkinter.Button(root, bg='black', command=lambda:light_up_button(18))
+btn19.place(x=510, y=30, height=60, width=20)
+btn20 = tkinter.Button(root, text='', bg='white', command=lambda:light_up_button(19))
+btn20.place(x=520, y=30, height=100, width=30)
+btn21 = tkinter.Button(root, bg='black', command=lambda:light_up_button(20))
+btn21.place(x=540, y=30, height=60, width=20)
+btn22 = tkinter.Button(root, text='', bg='white', command=lambda:light_up_button(21))
+btn22.place(x=550, y=30, height=100, width=30)
+btn23 = tkinter.Button(root, bg='black',fg='purple' , command=lambda:light_up_button(22))
+btn23.place(x=570, y=30, height=60, width=20)
+btn24 = tkinter.Button(root, text='', bg='white', command=lambda:light_up_button(23))
+btn24.place(x=580, y=30, height=100, width=30)
+
+btn25 = tkinter.Button(root, text='', bg='red', command=lambda:light_up_button(24))
+btn25.place(x=610, y=30, height=100, width=30)
+btn26 = tkinter.Button(root, bg='black', command=lambda:light_up_button(25))
+btn26.place(x=630, y=30, height=60, width=20)
+btn27 = tkinter.Button(root, text='', bg='white', command=lambda:light_up_button(26))
+btn27.place(x=640, y=30, height=100, width=30)
+btn28 = tkinter.Button(root, bg='black', command=lambda:light_up_button(27))
+btn28.place(x=660, y=30, height=60, width=20)
+btn29 = tkinter.Button(root, text='', bg='white', command=lambda:light_up_button(28))
+btn29.place(x=670, y=30, height=100, width=30)
+btn30 = tkinter.Button(root, text='', bg='white', command=lambda:light_up_button(29))
+btn30.place(x=700, y=30, height=100, width=30)
+btn31 = tkinter.Button(root, bg='black', command=lambda:light_up_button(30))
+btn31.place(x=720, y=30, height=60, width=20)
+btn32 = tkinter.Button(root, text='', bg='black', command=lambda:light_up_button(31))
+btn32.place(x=730, y=30, height=100, width=30)
+btn33 = tkinter.Button(root, bg='black', command=lambda:light_up_button(32))
+btn33.place(x=750, y=30, height=60, width=20)
+btn34 = tkinter.Button(root, text='', bg='white', command=lambda:light_up_button(33))
+btn34.place(x=760, y=30, height=100, width=30)
+btn35 = tkinter.Button(root, bg='black', command=lambda:light_up_button(34))
+btn35.place(x=780, y=30, height=60, width=20)
+btn36 = tkinter.Button(root, text='', bg='white', command=lambda:light_up_button(35))
+btn36.place(x=790, y=30, height=100, width=30)
+
+btn37 = tkinter.Button(root, text='', bg='white', command=lambda:light_up_button(36))
+btn37.place(x=820, y=30, height=100, width=30)
+
+btn38 = tkinter.Button(root, bg='black', command=lambda:light_up_button(37))
+btn38.place(x=840, y=30, height=60, width=20)
+btn39 = tkinter.Button(root, text='', bg='white',command=lambda:light_up_button(38))
+btn39.place(x=850, y=30, height=100, width=30)
+btn40 = tkinter.Button(root, bg='black', command=lambda:light_up_button(39))
+btn40.place(x=870, y=30, height=60, width=20)
+btn41 = tkinter.Button(root, text='', bg='white', command=lambda:light_up_button(40))
+btn41.place(x=880, y=30, height=100, width=30)
+btn42 = tkinter.Button(root, text='', bg='white', command=lambda:light_up_button(41))
+btn42.place(x=910, y=30, height=100, width=30)
+btn43 = tkinter.Button(root, bg='black', command=lambda:light_up_button(42))
+btn43.place(x=930, y=30, height=60, width=20)
+btn44 = tkinter.Button(root, text='', bg='white', command=lambda:light_up_button(43))
+btn44.place(x=940, y=30, height=100, width=30)
+btn45 = tkinter.Button(root, bg='black', command=lambda:light_up_button(44))
+btn45.place(x=960, y=30, height=60, width=20)
+btn46 = tkinter.Button(root, text='', bg='white', command=lambda:light_up_button(45))
+btn46.place(x=970, y=30, height=100, width=30)
+btn47 = tkinter.Button(root, bg='black', command=lambda:light_up_button(46))
+btn47.place(x=990, y=30, height=60, width=20)
+btn48 = tkinter.Button(root, text='', bg='white', command=lambda:light_up_button(47))
+btn48.place(x=1000, y=30, height=100, width=30)
+
+btn49 = tkinter.Button(root, text='', bg='white', command=lambda:light_up_button(48))
+btn49.place(x=1030, y=30, height=100, width=30)
+
+
+btn_list = [btn01, btn02, btn03, btn04, btn05, btn06, btn07, btn08, btn09,
+            btn10, btn11, btn12, btn13, btn14, btn15, btn16, btn17, btn18, btn19,
+            btn20, btn21, btn22, btn23, btn24, btn25, btn26, btn27, btn28, btn29,
+            btn30, btn31, btn32, btn33, btn34, btn35, btn36, btn37, btn38, btn39,
+            btn40, btn41, btn42, btn43, btn44, btn45, btn46, btn47, btn48, btn49]
 
 # GUIを開始，GUIが表示されている間は処理はここでストップ
 tkinter.mainloop()

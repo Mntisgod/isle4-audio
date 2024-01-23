@@ -27,7 +27,7 @@ def generate_sinusoid(sampling_rate, frequency, duration):
 SR = 16000
 
 # 音声ファイルの読み込み
-x, _ = librosa.load('../source/2_1_a.wav', sr=SR)
+x, _ = librosa.load('../source/1_1.wav', sr=SR)
 
 
 # 高速フーリエ変換
@@ -38,7 +38,7 @@ fft_spec = np.fft.rfft(x)
 fft_log_abs_spec = np.log(np.abs(fft_spec))
 
 # 生成する正弦波の周波数（Hz）
-frequency = 200.0
+frequency = 440.0
 
 # 生成する正弦波の時間的長さ
 duration = len(x)

@@ -5,9 +5,8 @@ import librosa
 import sys
 
 
-SR = 44100
-KER_SIZE = 10
-
+KER_SIZE = 2
+sr = 16000
 
 def nmf(spec):
     # Initialize H and U
@@ -23,28 +22,20 @@ def nmf(spec):
     return H.T, U
 
 
-def pltNMF(H, U):
-    plt.subplot(2, 1, 1)
-    plt.plot(H)
-    plt.subplot(2, 1, 2)
-    plt.plot(U)
-    plt.show()
-
-
-wav_path = "_kongyo_1.wav"
-x, _ = librosa.load(wav_path, sr=SR)
+wav_path = "nmf_piano_sample.wav"
+x, _ = librosa.load(wav_path, sr=sr)
 
 size_frame = 512
 hamming_window = np.hamming(size_frame)
-size_shift = 44100 / 100  # Ensure shift size is an integer
+size_shift = sr / 100  # Ensure shift size is an integer
 
 spectrogram = []
 
 for i in np.arange(0, len(x)-size_frame, size_shift):
     idx = int(i)
     x_frame = x[idx:idx+size_frame]
-    fft_spec = np.abs(np.fft.fft(x_frame))
-    fft_spec = [np.log(i) if i > 0 else 0.00000000001 for i in fft_spec]
+    fft_spec = np.abs(np.fft.rfft(x_frame))
+    # fft_spec = [np.log(i) if i > 0 else 0.00000000001 for i in fft_spec]
     spectrogram.append(fft_spec)
 
 #
@@ -61,7 +52,7 @@ plt.imshow(
     aspect='auto',
     origin='lower',
     interpolation='none',
-    extent=[0, H.shape[1], 0, SR//2]
+    extent=[0, H.shape[1], 0, sr//2]
 )
 plt.colorbar()
 plt.subplot(1, 2, 2)

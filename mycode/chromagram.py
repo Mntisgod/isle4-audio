@@ -48,6 +48,7 @@ for i in range(0, len(x)-size_frame, size_shift):
             max_chroma = 12 + i
             ans = _chroma_vector[i] + 0.5 * _chroma_vector[(i+3) % 12] + 0.8 * _chroma_vector[(i+7) % 12]
 
+    print(max_chroma)
     max_chroma_list.append(max_chroma)
     chromagram.append(_chroma_vector)
     fft_log_abs_spec = np.log(np.abs(np.fft.rfft(x_frame * hamming_window)))
@@ -69,7 +70,7 @@ plt.xlabel('time (s)')
 plt.ylabel('chroma')
 plt.imshow(
     np.flipud(np.array(chromagram).T),
-    extent=[0, len(x)/SR, 0, 12],
+    extent=[0, len(x)/SR, 0, 24],
     aspect='auto',
     interpolation='nearest'
 )

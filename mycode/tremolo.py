@@ -44,7 +44,7 @@ def calc_loudness(x):
 
 SR = 16000
 # 音声波形データを受け取る
-wav_path = "sobiet.wav"
+wav_path = "hotaru_no_hikari.mp3"
 
 # 音声ファイルの読み込み
 x, _ = librosa.load(wav_path, sr=SR)

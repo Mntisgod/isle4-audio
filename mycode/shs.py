@@ -6,9 +6,9 @@ import math
 
 
 SR = 16000
-size_frame = 2048
+size_frame = 4096
 hamming_window = np.hamming(size_frame)
-size_shift = int(16000 / 3)  # Ensure shift size is an integer
+size_shift = int(16000 / 100)  # Ensure shift size is an integer
 
 note_dict = {
     35: 'None',
@@ -39,6 +39,37 @@ note_dict = {
     60: 'C4',
 }
 
+def nn2key(notenum):
+    if notenum <= 23:
+        return '0'
+    key = notenum % 12
+    if key == 0:
+        return 'C' + str(notenum // 12 - 1)
+    elif key == 1:
+        return 'C#' + str(notenum // 12 - 1)
+    elif key == 2:
+        return 'D' + str(notenum // 12 - 1)
+    elif key == 3:
+        return 'D#' + str(notenum // 12 - 1)
+    elif key == 4:
+        return 'E' + str(notenum // 12 - 1)
+    elif key == 5:
+        return 'F' + str(notenum // 12 - 1)
+    elif key == 6:
+        return 'F#' + str(notenum // 12 - 1)
+    elif key == 7:
+        return 'G' + str(notenum // 12 - 1)
+    elif key == 8:
+        return 'G#' + str(notenum // 12 - 1)
+    elif key == 9:
+        return 'A' + str(notenum // 12 - 1)
+    elif key == 10:
+        return 'A#' + str(notenum // 12 - 1)
+    elif key == 11:
+        return 'B' + str(notenum // 12 - 1)
+    else:
+        return 'error'
+
 
 # ノートナンバーから周波数へ
 def nn2hz(notenum):
@@ -50,29 +81,31 @@ def shs(fft_spec):
     frequencies = np.linspace(8000/len(fft_spec), 8000, len(fft_spec))
     
     for nn in range(36, 61):
-        print(nn)
         hz = nn2hz(nn)
-        print(hz)
         power_s = 0
         for i in range(1, int(8000/hz)):
-            f = hz * i
+            f = hz * i      
             freq_diff = np.abs(frequencies - f)
-            # Use np.where to find indices where the condition is satisfied
-            indices = np.where(freq_diff < 0.03)[0]
-            # print(indices)
-            if len(indices) == 0:
+            target_index = np.argmin(freq_diff)
+            if target_index >= len(fft_spec):
                 continue
-            power_s += fft_spec[indices[0]] ** 2
+            # target_indexのビンのパワーを加算
+            power_s += np.abs(fft_spec[target_index])
+            if target_index > 0:
+                power_s += np.abs(fft_spec[target_index-1])
+            if target_index < len(fft_spec)-1:
+                power_s += np.abs(fft_spec[target_index+1])
         # print(power_s)
-        likelihood_l.append(power_s)
+        likelihood_l.append(power_s)3
     
     if max(likelihood_l) <= 0.000:
         return 35
+
     return likelihood_l.index(max(likelihood_l)) + 36
 
 
 # ファイル名とパス
-audio_file_path = "shs-test.wav"
+audio_file_path = "hotaru_no_hikari.mp3"
 
 # 音声データの読み込み
 y, sr = librosa.load(audio_file_path, sr=SR)
@@ -98,14 +131,16 @@ fundamental_freq_list = []
 for i in range(0, len(y)-size_frame, size_shift):
     idy = int(i)
     y_frame = y[idy:idy+size_frame]
-    fft_spec = np.fft.rfft(y_frame * hamming_window)
+    fft_spec = np.fft.fft(y_frame)
     fundamental_freq = shs(fft_spec)
     # dictからノートナンバーを取得
     note = note_dict[fundamental_freq]
     fundamental_freq_list.append(fundamental_freq)
+    print(f"SHS: {note} ")
 
 # ピッチの表示
 plt.figure(figsize=(10, 4))
+plt.yticks(np.arange(36, 61, 1), [nn2key(nn) for nn in range(36, 61)])
 plt.plot(fundamental_freq_list)
 plt.title('Pitch')
 plt.xlabel('Time (s)')

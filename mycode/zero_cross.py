@@ -46,7 +46,7 @@ def is_peak(a, index):
 # サンプリングレート
 SR = 16000
 
-wav_path = "../wav/aiueo2.wav"
+wav_path = "easy_chords.wav"
 # 音声ファイルの読み込み
 x, _ = librosa.load(wav_path, sr=SR)
 
